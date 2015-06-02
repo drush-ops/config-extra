@@ -1,0 +1,22 @@
+# Configuration for Travis CI
+language: php
+php:
+  - 5.3
+env:
+  - UNISH_DRUPAL_MAJOR_VERSION=8 UNISH_NO_TIMEOUTS=y UNISH_DB_URL=mysql://root:@127.0.0.1 DRUSH_VERSION=master
+install:
+  # For now, do it like xendk did
+  - composer self-update
+  - export PATH="$HOME/drush:$PATH"
+  - export DRUSH_DIR=~/drush
+  - git clone https://github.com/drush-ops/drush.git $DRUSH_DIR
+  - cd $DRUSH_DIR
+  - git checkout $DRUSH_VERSION
+  # Install Drush composer dependencies
+  - composer install --prefer-source
+  - phpenv rehash
+  - cd -
+  # Install dependencies (phpunit).
+  - composer install --prefer-source
+before_script:
+  - if ( test $DRUSH_VERSION = master ); then export CONFIG="--bootstrap=$DRUSH_DIR/tests/bootstrap.inc" ; else export CONFIG="--bootstrap=$DRUSH_DIR/tests/drush_testcase.inc"; fi

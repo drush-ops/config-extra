@@ -10,8 +10,6 @@
 
 DRUSH_PATH="$(which drush)"
 DRUSH_DIR="$(dirname -- "$DRUSH_PATH")"
-SELF_DIRNAME="`dirname -- "$0"`"
-SELF_ABSOLUTE_DIRNAME="`cd -P -- "$SELF_DIRNAME" && pwd -P`"
 
 PHPUNIT=phpunit
 
@@ -24,7 +22,7 @@ echo "DRUSH_PATH is $DRUSH_PATH"
 echo "PHPUNIT is $PHPUNIT"
 
 if [ $# = 0 ] ; then
-  UNISH_DRUPAL_MAJOR_VERSION=8 UNISH_NO_TIMEOUTS=y UNISH_INCLUDE="$SELF_ABSOLUTE_DIRNAME" $PHPUNIT --bootstrap="$DRUSH_DIR/tests/bootstrap.inc" tests
+  UNISH_DRUPAL_MAJOR_VERSION=8 UNISH_NO_TIMEOUTS=y $PHPUNIT --bootstrap="$DRUSH_DIR/tests/bootstrap.inc" tests
 else
-  UNISH_DRUPAL_MAJOR_VERSION=8 UNISH_NO_TIMEOUTS=y UNISH_INCLUDE="$SELF_ABSOLUTE_DIRNAME" $PHPUNIT --bootstrap="$DRUSH_DIR/tests/bootstrap.inc" "$@"
+  UNISH_DRUPAL_MAJOR_VERSION=8 UNISH_NO_TIMEOUTS=y $PHPUNIT --bootstrap="$DRUSH_DIR/tests/bootstrap.inc" "$@"
 fi
