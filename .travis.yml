@@ -3,7 +3,7 @@ language: php
 php:
   - 5.3
 env:
-  - UNISH_DRUPAL_MAJOR_VERSION=8 UNISH_NO_TIMEOUTS=y UNISH_DB_URL=mysql://root:@127.0.0.1 DRUSH_VERSION=master
+  - UNISH_DRUPAL_MAJOR_VERSION=8 UNISH_NO_TIMEOUTS=y UNISH_DB_URL=mysql://root:@127.0.0.1 DRUSH_VERSION=master PHPUNIT_ARGS=tests
 install:
   # For now, do it like xendk did
   - composer self-update
@@ -19,4 +19,6 @@ install:
   # Install dependencies (phpunit).
   - composer install --prefer-source
 before_script:
-  - if ( test $DRUSH_VERSION = master ); then export CONFIG="--bootstrap=$DRUSH_DIR/tests/bootstrap.inc" ; else export CONFIG="--bootstrap=$DRUSH_DIR/tests/drush_testcase.inc"; fi
+  - echo "sendmail_path='true'" >> `php --ini | grep "Loaded Configuration" | awk '{print $4}'`
+  - export UNISH_DRUSH="${DRUSH_DIR}/drush"
+script: ${PWD}/runtests.sh $PHPUNIT_ARGS
