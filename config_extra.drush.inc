@@ -62,20 +62,6 @@ function config_extra_drush_command() {
     'callback arguments' => array($topic_file),
   );
 
-  // Commandfiles may also add topics.  These will appear in
-  // the list of topics when `drush topic` is executed.
-  $topic_file = dirname(__FILE__) . '/config-extra-topic.txt';
-  if (file_exists($topic_file)) {
-    $items['docs-config-extra'] = array(
-      'description' => 'Description of command topic.',
-      'hidden' => TRUE,
-      'topic' => TRUE,
-      'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
-      'callback' => 'drush_print_file',
-      'callback arguments' => array($topic_file),
-    );
-  }
-
   return $items;
 }
 
