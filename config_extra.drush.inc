@@ -49,6 +49,7 @@ function config_extra_drush_command() {
     'examples' => array(
       'drush @dev config-merge @production' => 'Merge configuration changes from the production site with the configuration changes made on the development site.',
       'drush @dev config-merge /path/to/drupal#sitefolder' => 'Merge configuration changes from the site indicated by the provided site specification.',
+      'drush config-merge --no-commit' => 'Merge configuration changes in the database of the current site with the configuration changes in its `staging` configuration store. The merged files will remain unstaged.',
     ),
     'topics' => array('docs-cm'),
   );
@@ -136,15 +137,11 @@ function drush_config_extra_config_merge($alias = '', $config_label = 'staging')
     'undo-rollback' => FALSE,
   );
 
-  // Adjust the label for the live site to 'git' if there was no live site alias provided
+  // Force transport to 'git' and adjust the label
+  // if there was no live site alias provided
   if (empty($merge_info['live-site'])) {
-    if ($merge_info['git-transport']) {
-      $merge_info['live-site-label'] = 'git';
-    }
-    else {
-      // A remote site is required unless in --git mode
-      return drush_set_error('DRUSH_CONFIG_MERGE_PARAMETER_ERROR', dt("Drush config-merge must be provided with a site alias to operate on, unless --git mode is used."));
-    }
+    $merge_info['git-transport'] = TRUE;
+    $merge_info['live-site-label'] = 'git';
   }
 
   $result = _drush_cme_get_initial_vcs_state($merge_info);
