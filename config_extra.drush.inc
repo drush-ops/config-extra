@@ -689,7 +689,7 @@ function _drush_cme_merge_to_original_branch(&$merge_info) {
         // in the comment, which hopefully will read okay
         $config = Drupal::config('system.site');
         $site_name = $config->get('name');
-        $merge_info['message'] = dt("Merged configuration from !live in !site", array('!live' => $merge_info['live-site-label'], '!site' => $site_name));
+        $merge_info['message'] = dt("Merged configuration from @live in @site", array('@live' => $merge_info['live-site-label'], '@site' => $site_name));
 
         // Retrieve a list of differences between the active and target configuration (if any).
         $target_storage = new FileStorage($configuration_path);
