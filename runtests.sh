@@ -10,14 +10,18 @@
 
 # We use the Drush that is on the global $PATH. See .travis.yml
 DRUSH_PATH="$(which drush)"
-DRUSH_DIR="$(dirname -- "$DRUSH_PATH")"
+SYM="`readlink "$DRUSH_PATH"`"
+SYM_DIRNAME="`dirname -- "$SYM"`"
+DRUSH_DIR="`cd "$(dirname -- "$DRUSH_PATH")" && cd "$SYM_DIRNAME" && pwd`/"
 
 # Prefer the phpunit that Drush bundles, if available
 PHPUNIT=phpunit
-if [ -f "$DRUSH_DIR/vendor/bin/phpunit" ]
-then
-  PHPUNIT="$DRUSH_DIR/vendor/bin/phpunit"
-fi
+for p in "$DRUSH_DIR/vendor/bin/phpunit" "$(dirname -- "$DRUSH_PATH")"/phpunit; do
+  if [ -f "$p" ]
+  then
+    PHPUNIT="$p"
+  fi
+done
 
 # Prefer testing with Drupal 8 (maybe Drupal 7 will work someday, but not today)
 if [ -z "$UNISH_DRUPAL_MAJOR_VERSION" ]
