@@ -21,7 +21,7 @@ function config_extra_drush_command() {
     'aliases' => array('cm'),
     'arguments' => array(
       'site' => 'Alias for the site containing the other configuration data to merge.',
-      'label' => "A config directory label (i.e. a key in \$config_directories array in settings.php). Defaults to 'staging'",
+      'label' => "A config directory label (i.e. a key in \$config_directories array in settings.php). Defaults to 'sync'",
     ),
     'options' => array(
       'base' => 'The commit hash or tag for the base of the three-way merge operation.  This should be the most recent commit that was deployed to the site specified in the first argument.',
@@ -49,7 +49,7 @@ function config_extra_drush_command() {
     'examples' => array(
       'drush @dev config-merge @production' => 'Merge configuration changes from the production site with the configuration changes made on the development site.',
       'drush @dev config-merge /path/to/drupal#sitefolder' => 'Merge configuration changes from the site indicated by the provided site specification.',
-      'drush config-merge --no-commit' => 'Merge configuration changes in the database of the current site with the configuration changes in its `staging` configuration store. The merged files will remain unstaged.',
+      'drush config-merge --no-commit' => 'Merge configuration changes in the database of the current site with the configuration changes in its `sync` configuration store. The merged files will remain unstaged.',
     ),
     'topics' => array('docs-cm'),
   );
@@ -106,7 +106,7 @@ function config_extra_drush_help($section) {
  * @param $config_label
  *   Which configuration set (active, etaging, etc.) to operate on
  */
-function drush_config_extra_config_merge($alias = '', $config_label = 'staging') {
+function drush_config_extra_config_merge($alias = '', $config_label = 'sync') {
   // Use in log and commit messages
   $site_label = $alias;
   // If '$alias' is a 'sites' folder, then convert it into a site
