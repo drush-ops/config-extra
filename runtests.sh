@@ -8,6 +8,10 @@
 # Any parameters that may be passed to phpunit may also be used
 # with runtests.sh.
 
+echo
+echo "Begin tests."
+echo
+
 # We use the Drush that is on the global $PATH. See .travis.yml
 DRUSH_PATH="$(which drush)"
 SYM="`readlink "$DRUSH_PATH"`"
@@ -31,7 +35,9 @@ fi
 
 # Run all tests if there were no arguments
 if [ $# = 0 ] ; then
+  echo UNISH_NO_TIMEOUTS=y $PHPUNIT --bootstrap="$DRUSH_DIR/tests/bootstrap.inc" tests
   UNISH_NO_TIMEOUTS=y $PHPUNIT --bootstrap="$DRUSH_DIR/tests/bootstrap.inc" tests
 else
+  echo UNISH_NO_TIMEOUTS=y $PHPUNIT --bootstrap="$DRUSH_DIR/tests/bootstrap.inc" "$@"
   UNISH_NO_TIMEOUTS=y $PHPUNIT --bootstrap="$DRUSH_DIR/tests/bootstrap.inc" "$@"
 fi
