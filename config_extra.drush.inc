@@ -282,7 +282,7 @@ function _drush_cme_get_initial_vcs_state(&$merge_info) {
   }
   $uncommitted_changes = drush_shell_exec_output();
   if (!empty($uncommitted_changes)) {
-    return drush_set_error('DRUSH_CONFIG_MERGE_UNCOMMITTED_CHANGES', dt("Working set has uncommitted changes; please commit or discard them before merging.  `git stash` before `drush config-merge`, and `git stash pop` afterwards can be useful here.\n\n!changes", array('!changes' => $uncommitted_changes)));
+    return drush_set_error('DRUSH_CONFIG_MERGE_UNCOMMITTED_CHANGES', dt("Working set has uncommitted changes; please commit or discard them before merging.  `git stash` before `drush config-merge`, and `git stash pop` afterwards can be useful here.\n\n!changes", array('!changes' => implode('\n', $uncommitted_changes))));
   }
 }
 
