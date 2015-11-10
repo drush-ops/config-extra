@@ -209,14 +209,20 @@ function drush_config_extra_config_merge($alias = '', $config_label = 'sync') {
     return FALSE;
   }
 
-  // Check to see if the export changed any files.  If it did not, then
-  // skip the merge, and process only the config pulled in from the other site.
-  // TODO: This needs to be a diff against the base commit.  In 'git' mode,
-  // we probably want to just skip this test and always merge.  Maybe always do this?
+  // Check to see if the export (or previous ones) changed any files.  If it did
+  // not, then skip the merge, and process only the config pulled in from the
+  // site.
+
   $configuration_path = _drush_cme_get_configuration_path($merge_info);
-  $result = drush_shell_cd_and_exec($configuration_path, 'git status --porcelain .');
+  // This is needed because diff-tree does not take untracked files into account.
+  $result = drush_shell_cd_and_exec($configuration_path, 'git add -A .');
   if (!$result) {
-    return drush_set_error('DRUSH_CONFIG_MERGE_FAILURE', dt("`git status` failed."));
+    return drush_set_error('DRUSH_CONFIG_MERGE_FAILURE', dt("`git add -A` failed."));
+  }
+
+  $result = drush_shell_cd_and_exec($configuration_path, 'git diff-tree --no-commit-id --name-only -r HEAD %s .', $merge_info['merge-base']);
+  if (!$result) {
+    return drush_set_error('DRUSH_CONFIG_EXPORT_FAILURE', dt("`git diff-tree` failed."));
   }
   $changed_configuration_files = drush_shell_exec_output();
   if (empty($changed_configuration_files)) {
@@ -527,12 +533,21 @@ function _drush_cme_merge_local_and_remote_configurations(&$merge_info) {
   if (!$result) {
     return drush_set_error('DRUSH_CONFIG_MERGE_FAILURE', dt("`git add -A` failed."));
   }
-  // Note that this commit will be `merge --squash`-ed away.  We'll put in
-  // a descriptive message to help users understand where it came from, if
-  // they end up with dirty branches after an aborted run.
-  $result = drush_shell_cd_and_exec($configuration_path, 'git commit -m %s', 'Drush config-merge exported configuration from ' . $merge_info['dev-site'] . ' ' . $merge_info['message']);
+  // Commit only if there's something to commit.
+  $result = drush_shell_cd_and_exec($configuration_path, 'git status --porcelain .');
+
   if (!$result) {
-    return drush_set_error('DRUSH_CONFIG_MERGE_FAILURE', dt("`git commit` failed."));
+    return drush_set_error('DRUSH_CONFIG_MERGE_FAILURE', dt("`git status` failed."));
+  }
+  $uncommitted_changes = drush_shell_exec_output();
+  if (!empty($uncommitted_changes)) {
+    // Note that this commit will be `merge --squash`-ed away.  We'll put in
+    // a descriptive message to help users understand where it came from, if
+    // they end up with dirty branches after an aborted run.
+    $result = drush_shell_cd_and_exec($configuration_path, 'git commit -m %s', 'Drush config-merge exported configuration from ' . $merge_info['dev-site'] . ' ' . $merge_info['message']);
+    if (!$result) {
+      return drush_set_error('DRUSH_CONFIG_MERGE_FAILURE', dt("`git commit` failed."));
+    }
   }
 
   // git checkout live-config && git rebase dev-config.
