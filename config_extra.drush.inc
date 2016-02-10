@@ -38,7 +38,7 @@ function config_extra_drush_command() {
       'fetch-only' => "Don't run `git mergetool`; fetch all configuration changes from both sites, and merge them onto the working branch.  May result in unresolved merge conflicts.",
       'git' => "Fetch changes from the other site using git instead of rsync.",
       'remote' => array(
-        'description' => 'The remote git branch to use to fetch changes.  Defaults to "origin".',
+        'description' => 'The remote git repository to use to fetch changes.  Defaults to "origin".',
         'example-value' => 'origin',
       ),
       'temp' => array(
