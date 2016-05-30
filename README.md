@@ -10,7 +10,7 @@ Installation
 ------------
 
 1. cd "$HOME/.drush"
-2. composer global require "drush/config-extra"
+2. composer require "drush/config-extra"
 3. drush cc drush
 
 Resources
