@@ -1,6 +1,7 @@
 {
   "name": "drush/config-extra",
   "description": "Drush config-extra contains additional configuration Drush commands, notably config-merge.",
+  "type": "drupal-drush",
   "license": "GPL-2.0+",
   "keywords": ["drush"],
   "minimum-stability": "dev",
