@@ -31,6 +31,7 @@ function config_extra_drush_command() {
       ),
       'message' => 'Commit comment for the merged configuration.',
       'no-commit' => 'Do not commit the fetched configuration; leave the modified files unstaged.',
+      'no-self-export' => "Neither export nor commit the destination's active database configuration before merging from the source.  This will overwrite it.  Simply merge the destination's code with the source's configuration, and then import it.",
       'tool' => array(
         'description' => 'Specific tool to use with `git mergetool`.  Use --tool=0 to prevent use of mergetool.  Optional.  Defaults to whatever tool is configured in git.',
         'example-value' => 'kdiff3',
@@ -49,6 +50,7 @@ function config_extra_drush_command() {
     'examples' => array(
       'drush @dev config-merge @production' => 'Merge configuration changes from the production site with the configuration changes made on the development site.',
       'drush @dev config-merge /path/to/drupal#sitefolder' => 'Merge configuration changes from the site indicated by the provided site specification.',
+      'drush @dev config-merge --git --no-self-export @prod' => "Merge Prod's configuration with code in the current working branch, and then import it (overwriting Dev's active configuration).",
       'drush config-merge --no-commit' => 'Merge configuration changes in the database of the current site with the configuration changes in its `sync` configuration store. The merged files will remain unstaged.',
     ),
     'topics' => array('docs-cm'),
@@ -121,6 +123,7 @@ function drush_config_extra_config_merge($alias = '', $config_label = 'sync') {
     'message' => drush_get_option('message', ''),
     'commit' => !drush_get_option('no-commit', FALSE),
     'git-transport' => drush_get_option('git', FALSE),
+    'self-export' => !drush_get_option('no-self-export', FALSE),
     'tool' => drush_get_option('tool', ''),
     'temp' => drush_get_option('temp', TRUE),
     'config-label' => $config_label,
@@ -200,13 +203,17 @@ function drush_config_extra_config_merge($alias = '', $config_label = 'sync') {
     return FALSE;
   }
 
-  $result = _drush_cme_prepare_for_local_configuration_export($merge_info);
-  if ($result === FALSE) {
-    return FALSE;
-  }
-  $result = _drush_cme_export_local_configuration($merge_info);
-  if ($result === FALSE) {
-    return FALSE;
+  if ($merge_info['self-export']) {
+    // Prepare to export the local configuration.
+    $result = _drush_cme_prepare_for_local_configuration_export($merge_info);
+    if ($result === FALSE) {
+      return FALSE;
+    }
+    // Perform the local configuration export.
+    $result = _drush_cme_export_local_configuration($merge_info);
+    if ($result === FALSE) {
+      return FALSE;
+    }
   }
 
   // Check to see if the export changed any files.  If it did not, then
