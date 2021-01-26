@@ -375,7 +375,7 @@ function _drush_cme_copy_remote_configuration_via_git(&$merge_info) {
     return drush_set_error('DRUSH_CONFIG_EXPORT_FAILURE', dt("`git pull` failed.  Output:\n\n!output", array('!output' => implode("\n", drush_shell_exec_output()))));
   }
   // Check out the 'live-config' branch.  This should always exist; config-export should create it for us.
-  $result = drush_shell_cd_and_exec($configuration_path, 'git fetch');
+  $result = drush_shell_cd_and_exec($configuration_path, 'git fetch %s', $merge_info['remote']);
   $result = drush_shell_cd_and_exec($configuration_path, 'git checkout %s', $merge_info['live-config']);
   if (!$result) {
     return drush_set_error('DRUSH_CONFIG_MERGE_FAILURE', dt("Could not switch to working branch !b", array('!b' => $merge_info['live-config'])));
