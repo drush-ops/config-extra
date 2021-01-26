@@ -9,8 +9,24 @@ Requirements
 Installation
 ------------
 
+A) Using composer
+
 1. cd "$HOME/.drush"
 2. composer require "drush/config-extra"
+3. drush cc drush
+
+B) Using wget
+
+1. cd "$HOME/.drush"
+2. wget https://github.com/drush-ops/config-extra/archive/master.tar.gz
+3. tar -zxvf config-extra-master.tar.gz && rm -f config-extra-master.tar.gz
+4. mv config-extra-master config-extra
+5. drush cc drush
+
+C) Using git
+
+1. cd "$HOME/.drush"
+2. git clone git@github.com:drush-ops/config-extra.git
 3. drush cc drush
 
 Resources
